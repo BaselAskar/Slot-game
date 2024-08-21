@@ -1,0 +1,7 @@
+.reel {
+    width: var(--icon-width);
+    height: calc(3 * var(--icon-width));
+    border: 1px solid white;
+    background-repeat: repeat-y;
+    background-position-x: 0;
+}

@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next"
 
-import crypto from "crypto"
-import { RollResult } from "@utils/models/rollResult"
 import { Prize } from "@utils/models/prize"
+import { RollResult } from "@utils/models/rollResult"
+import crypto from "crypto"
 
 const MAX_INDEX = 8
 const MIN_ROLL = 5

@@ -1,12 +1,13 @@
 "use client"
 import Reel from "@utils/components/Reel"
 import SpinButton from "@utils/components/SpinButton"
-import Win from "@utils/components/WIn"
-import { Prize } from "@utils/models/prize"
+import Win from "@utils/components/Win"
 import { RollResult } from "@utils/models/rollResult"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 export default function Home() {
+    const init = useRef<boolean>(false)
+
     const [stop, setStop] = useState<[boolean, boolean, boolean]>([true, true, true])
 
     const [result, setResult] = useState<[RollResult, RollResult, RollResult]>([
@@ -29,6 +30,20 @@ export default function Home() {
     function submitForm(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
+        const latestPlay = localStorage.getItem("last_play")
+
+        if (latestPlay) {
+            const now = new Date()
+
+            const latestPalyDate = new Date(latestPlay)
+
+            if (now < new Date(latestPalyDate.getTime() + 60000)) {
+                console.log("You are not allowed to play ...")
+                return
+            }
+        }
+
+        init.current = true
         setStop([false, false, false])
         ;(async () => {
             if (!selectEl.current) return
@@ -40,7 +55,9 @@ export default function Home() {
             if (response.ok) {
                 const data: [RollResult, RollResult, RollResult] = await response.json()
 
-                console.log(data)
+                localStorage.setItem("last_play", new Date().toString())
+
+                setTimeout(() => {})
 
                 setResult(data)
             }
@@ -49,7 +66,7 @@ export default function Home() {
 
     return (
         <div className="flex flex-col items-center gap-4">
-            {result.every((r, _, arr) => r.value === arr[0].value) && stop.every((s) => s) && <Win />}
+            {result.every((r, _, arr) => r.value === arr[0].value) && stop.every((s) => s) && init.current && <Win />}
             <div className="slots">
                 <Reel onStop={() => setStop((pre) => [true, pre[1], pre[2]])} index={0} result={result} />
                 <Reel onStop={() => setStop((pre) => [pre[0], true, pre[2]])} index={1} result={result} />
